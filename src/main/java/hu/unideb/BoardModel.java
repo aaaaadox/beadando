@@ -147,13 +147,13 @@ public class BoardModel {
     }
 
     private Direction determineDirection(int i, int j) {
-        if (i > posX.get() && j == posY.get()) {
+        if (i == posX.get() + 1 && j == posY.get()) {
             return Direction.SOUTH;
-        } else if (i < posX.get() && j == posY.get()) {
+        } else if (i == posX.get() - 1 && j == posY.get()) {
             return Direction.NORTH;
-        } else if (i == posX.get() && j > posY.get()) {
+        } else if (i == posX.get() && j == posY.get() + 1) {
             return Direction.EAST;
-        } else if (i == posX.get() && j < posY.get()) {
+        } else if (i == posX.get() && j == posY.get() - 1) {
             return Direction.WEST;
         } else {
             return null;
