@@ -44,19 +44,19 @@ public class BoardController {
 
     private void handlePieceRepaintX(ObservableValue observableValue, Number oldValue, Number newValue) {
         Logger.debug("Change in X detected");
-        Logger.error("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
+        Logger.debug("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
+
         // remove the piece from its old position
         ((StackPane) board.getChildren().get(oldValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().remove(0);
 
         // create a piece at its new position
-        var piece = new Circle(25);
-        piece.setFill(Color.BROWN);
         ((StackPane) board.getChildren().get(newValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().add(createPiece());
     }
 
     private void handlePieceRepaintY(ObservableValue observableValue, Number oldValue, Number newValue) {
         Logger.debug("Change in Y detected");
-        Logger.error("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
+        Logger.debug("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
+
         // remove the piece from its old position
         ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + oldValue.intValue())).getChildren().remove(0);
 
