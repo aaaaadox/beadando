@@ -28,30 +28,40 @@ public class BoardController {
             }
         }
 
+        ((StackPane) board.getChildren().get(6 * board.getColumnCount())).getChildren().add(createPiece());
+
         model.youLostProperty().addListener(this::handleYouLost);
         model.youWonProperty().addListener(this::handleYouWon);
         model.posXProperty().addListener(this::handlePieceRepaintX);
         model.posYProperty().addListener(this::handlePieceRepaintY);
     }
 
+    private Circle createPiece() {
+        var piece = new Circle(25);
+        piece.setFill(Color.LIGHTGREEN);
+        return piece;
+    }
+
     private void handlePieceRepaintX(ObservableValue observableValue, Number oldValue, Number newValue) {
+        Logger.debug("Change in X detected");
+        Logger.error("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
         // remove the piece from its old position
-        ((StackPane) board.getChildren().get(oldValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().removeAll();
+        ((StackPane) board.getChildren().get(oldValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().remove(0);
 
         // create a piece at its new position
-        var piece = new Circle(50);
+        var piece = new Circle(25);
         piece.setFill(Color.BROWN);
-        ((StackPane) board.getChildren().get(newValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().add(piece);
+        ((StackPane) board.getChildren().get(newValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().add(createPiece());
     }
 
     private void handlePieceRepaintY(ObservableValue observableValue, Number oldValue, Number newValue) {
+        Logger.debug("Change in Y detected");
+        Logger.error("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
         // remove the piece from its old position
-        ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + oldValue.intValue())).getChildren().removeAll();
+        ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + oldValue.intValue())).getChildren().remove(0);
 
         // create a piece at its new position
-        var piece = new Circle(50);
-        piece.setFill(Color.BROWN);
-        ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + newValue.intValue())).getChildren().add(piece);
+        ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + newValue.intValue())).getChildren().add(createPiece());
     }
 
     private void handleYouLost(ObservableValue observableValue, boolean oldValue, boolean newValue) {

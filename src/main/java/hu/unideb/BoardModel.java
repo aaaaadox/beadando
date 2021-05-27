@@ -12,9 +12,9 @@ public class BoardModel {
 
     private ReadOnlyBooleanWrapper youWon = new ReadOnlyBooleanWrapper();
 
-    private ReadOnlyIntegerWrapper posX = new ReadOnlyIntegerWrapper(6);
+    private ReadOnlyIntegerWrapper posX = new ReadOnlyIntegerWrapper();
 
-    private ReadOnlyIntegerWrapper posY = new ReadOnlyIntegerWrapper(0);
+    private ReadOnlyIntegerWrapper posY = new ReadOnlyIntegerWrapper();
 
     private Direction previousDirection = Direction.NORTH;
 
@@ -50,6 +50,10 @@ public class BoardModel {
         board[5][6] = new ReadOnlyObjectWrapper<Square>(Square.RED);
         board[6][2] = new ReadOnlyObjectWrapper<Square>(Square.RED);
         board[6][3] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+
+        // put down our piece at the starting point
+        posX.set(6);
+        posY.set(0);
     }
 
     public ReadOnlyObjectProperty<Square> squareProperty(int i, int j) {
@@ -106,14 +110,14 @@ public class BoardModel {
                     }
                 }
                 case RED -> {
-                    if (Direction.forwardOf(previousDirection) != nextDirection ||
+                    if (Direction.forwardOf(previousDirection) != nextDirection &&
                         Direction.rightOf(previousDirection) != nextDirection) {
                         Logger.warn("Illegal move attempt detected.");
                         return;
                     }
                 }
                 case BLUE -> {
-                    if (Direction.forwardOf(previousDirection) != nextDirection ||
+                    if (Direction.forwardOf(previousDirection) != nextDirection &&
                         Direction.leftOf(previousDirection) != nextDirection) {
                         Logger.warn("Illegal move attempt detected.");
                         return;
@@ -123,17 +127,23 @@ public class BoardModel {
 
             // at this point we can be sure the move can be taken
             switch (nextDirection) {
-                case NORTH -> posY.set(posY.get() - 1);
-                case EAST -> posX.set(posX.get() + 1);
-                case SOUTH -> posY.set(posY.get() + 1);
-                case WEST -> posX.set(posX.get() - 1);
+                case NORTH -> posX.set(posX.get() - 1);
+                case EAST -> posY.set(posY.get() + 1);
+                case SOUTH -> posX.set(posX.get() + 1);
+                case WEST -> posY.set(posY.get() - 1);
             }
+
+            // this was a fun bug to track back
+            previousDirection = nextDirection;
 
             // check if we won yet (should've done this with binding but i'm tired)
             if (posX.get() == 0 && posY.get() == 6) {
                 youWon.set(true);
             }
+
+            return;
         }
+        Logger.warn("Illegal move attempt detected.");
     }
 
     private Direction determineDirection(int i, int j) {
