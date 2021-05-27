@@ -20,11 +20,10 @@ public class BoardController {
     private void initialize() {
         for (int i = 0; i < board.getRowCount(); i++) {
             for (int j = 0; j < board.getColumnCount(); j++) {
-                var square = createSquare(i, j);
-                board.add(square, j, i);
+                board.add(createSquare(i, j), j, i);
             }
         }
-        
+
         model.youLostProperty().addListener(this::handleYouLost);
         model.youWonProperty().addListener(this::handleYouWon);
     }
@@ -57,9 +56,18 @@ public class BoardController {
         var square = new StackPane();
         square.getStyleClass().add(
                 switch(model.getSquare(i, j)) {
-                    case WHITE -> "whitecell";
-                    case RED -> "redcell";
-                    case BLUE -> "bluecell";
+                    case WHITE -> {
+                        Logger.debug("created white square");
+                        yield "whitecell";
+                    }
+                    case RED -> {
+                        Logger.debug("created red square");
+                        yield "redcell";
+                    }
+                    case BLUE -> {
+                        Logger.debug("created blue square");
+                        yield "bluecell";
+                    }
                 }
         );
         return square;

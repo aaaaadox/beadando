@@ -11,13 +11,9 @@
 }
 
 .bluecell {
-    -fx-background-color: lightblue;
-}
-
-.bluecell:hover {
     -fx-background-color: blue;
 }
 
-.possible {
-    -fx-border-style: 2px green;
+.bluecell:hover {
+    -fx-background-color: darkblue;
 }

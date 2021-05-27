@@ -72,6 +72,6 @@ public class BoardModel {
     }
 
     public void move(int i, int j) {
-
+        // stubbed
     }
 }
