@@ -9,7 +9,9 @@ public class BoardModel {
 
     private ReadOnlyObjectWrapper<Square>[][] board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
 
-    private ReadOnlyBooleanWrapper gameOver = new ReadOnlyBooleanWrapper();
+    private ReadOnlyBooleanWrapper youLost = new ReadOnlyBooleanWrapper();
+
+    private ReadOnlyBooleanWrapper youWon = new ReadOnlyBooleanWrapper();
 
     public BoardModel() {
         // default (white)
@@ -51,6 +53,22 @@ public class BoardModel {
 
     public Square getSquare(int i, int j) {
         return board[i][j].get();
+    }
+
+    public boolean getYouLost() {
+        return youLost.get();
+    }
+
+    public ReadOnlyBooleanWrapper youLostProperty() {
+        return youLost;
+    }
+
+    public boolean getYouWon() {
+        return youWon.get();
+    }
+
+    public ReadOnlyBooleanWrapper youWonProperty() {
+        return youWon;
     }
 
     public void move(int i, int j) {
