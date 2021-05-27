@@ -1,6 +1,7 @@
 package hu.unideb;
 
 public enum Square {
-    NO,
-    YES
+    WHITE,
+    RED,
+    BLUE
 }

@@ -12,11 +12,37 @@ public class BoardModel {
     private ReadOnlyBooleanWrapper gameOver = new ReadOnlyBooleanWrapper();
 
     public BoardModel() {
+        // default (white)
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.NO);
+                board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.WHITE);
             }
         }
+
+        // blue
+        board[0][0] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[1][0] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[1][2] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[1][5] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[2][2] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[3][0] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[3][1] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[3][2] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[3][4] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+        board[5][2] = new ReadOnlyObjectWrapper<Square>(Square.BLUE);
+
+        // red
+        board[0][4] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[2][1] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[2][3] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[4][0] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[4][1] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[4][3] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[4][4] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[5][3] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[5][6] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[6][2] = new ReadOnlyObjectWrapper<Square>(Square.RED);
+        board[6][3] = new ReadOnlyObjectWrapper<Square>(Square.RED);
     }
 
     public ReadOnlyObjectProperty<Square> squareProperty(int i, int j) {

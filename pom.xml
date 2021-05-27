@@ -16,6 +16,8 @@
     <maven.compiler.source>16</maven.compiler.source>
     <maven.compiler.target>16</maven.compiler.target>
     <junit.jupiter.version>5.7.1</junit.jupiter.version>
+    <javafx.version>16</javafx.version>
+    <tinylog.version>2.3.1</tinylog.version>
   </properties>
 
   <developers>
@@ -42,13 +44,26 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>16</version>
+      <version>${javafx.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
-      <version>16</version>
+      <version>${javafx.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.tinylog</groupId>
+      <artifactId>tinylog-api</artifactId>
+      <version>${tinylog.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.tinylog</groupId>
+      <artifactId>tinylog-impl</artifactId>
+      <version>${tinylog.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
