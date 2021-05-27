@@ -3,6 +3,8 @@ package hu.unideb;
 import javafx.beans.property.*;
 import org.tinylog.Logger;
 
+import java.util.Arrays;
+
 public class BoardModel {
     public static int BOARD_SIZE = 7;
 
@@ -96,54 +98,73 @@ public class BoardModel {
         return posY;
     }
 
+    private boolean isLegal(Square sq, Direction prevDirection, Direction nextDirection) {
+        switch (sq) {
+            case WHITE -> {
+                if (Direction.forwardOf(prevDirection) != nextDirection) {
+                    return false;
+                }
+            }
+            case RED -> {
+                if (Direction.forwardOf(prevDirection) != nextDirection &&
+                        Direction.rightOf(prevDirection) != nextDirection) {
+                    return false;
+                }
+            }
+            case BLUE -> {
+                if (Direction.forwardOf(prevDirection) != nextDirection &&
+                        Direction.leftOf(prevDirection) != nextDirection) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void changePos(Direction nextDirection) {
+        switch (nextDirection) {
+            case NORTH -> posX.set(posX.get() - 1);
+            case EAST -> posY.set(posY.get() + 1);
+            case SOUTH -> posX.set(posX.get() + 1);
+            case WEST -> posY.set(posY.get() - 1);
+        }
+
+        // this was a fun bug to track back
+        previousDirection = nextDirection;
+    }
+
+    private void checkWinState() {
+        if (posX.get() == 0 && posY.get() == 6) youWon.set(true);
+    }
+
+    private void checkLoseState() {
+        // stubbed
+    }
+
     public void move(int i, int j) {
         // check if it's even near the current pos
         var nextDirection = determineDirection(i, j);
-        if (nextDirection != null) {
+        if (nextDirection == null) {
+            Logger.warn("Illegal move attempt detected. Target ({}, {}) not in range.", i, j);
+        } else {
             // check if it's a legal step to make
             var currSquare = board[posX.get()][posY.get()].get();
-            switch (currSquare) {
-                case WHITE -> {
-                    if (Direction.forwardOf(previousDirection) != nextDirection) {
-                        Logger.warn("Illegal move attempt detected.");
-                        return;
-                    }
-                }
-                case RED -> {
-                    if (Direction.forwardOf(previousDirection) != nextDirection &&
-                        Direction.rightOf(previousDirection) != nextDirection) {
-                        Logger.warn("Illegal move attempt detected.");
-                        return;
-                    }
-                }
-                case BLUE -> {
-                    if (Direction.forwardOf(previousDirection) != nextDirection &&
-                        Direction.leftOf(previousDirection) != nextDirection) {
-                        Logger.warn("Illegal move attempt detected.");
-                        return;
-                    }
-                }
+            if (isLegal(currSquare, previousDirection, nextDirection)) {
+                // at this point we can be sure the move can be taken
+                changePos(nextDirection);
+
+                // check if we've won yet (should've done this with binding but i'm tired)
+                checkWinState();
+
+                // check if we've lost yet (same here)
+                checkLoseState();
             }
-
-            // at this point we can be sure the move can be taken
-            switch (nextDirection) {
-                case NORTH -> posX.set(posX.get() - 1);
-                case EAST -> posY.set(posY.get() + 1);
-                case SOUTH -> posX.set(posX.get() + 1);
-                case WEST -> posY.set(posY.get() - 1);
+            else {
+                Logger.error("Illegal move detected! Cannot move {} from a {} square, if the previous move was {}.",
+                        nextDirection.name(), currSquare.name(), previousDirection.name());
             }
-
-            // this was a fun bug to track back
-            previousDirection = nextDirection;
-
-            // check if we won yet (should've done this with binding but i'm tired)
-            if (posX.get() == 0 && posY.get() == 6) {
-                youWon.set(true);
-            }
-
-            return;
         }
-        Logger.warn("Illegal move attempt detected.");
     }
 
     private Direction determineDirection(int i, int j) {
