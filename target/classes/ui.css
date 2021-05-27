@@ -1,0 +1,23 @@
+.whitecell:hover {
+    -fx-background-color: whitesmoke;
+}
+
+.redcell {
+    -fx-background-color: red;
+}
+
+.redcell:hover {
+    -fx-background-color: darkred;
+}
+
+.bluecell {
+    -fx-background-color: lightblue;
+}
+
+.bluecell:hover {
+    -fx-background-color: blue;
+}
+
+.possible {
+    -fx-border-style: 2px green;
+}
