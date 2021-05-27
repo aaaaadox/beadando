@@ -1,5 +1,9 @@
+.whitecell {
+    -fx-background-color: white;
+}
+
 .whitecell:hover {
-    -fx-background-color: whitesmoke;
+    -fx-background-color: lightgrey;
 }
 
 .redcell {
@@ -16,4 +20,12 @@
 
 .bluecell:hover {
     -fx-background-color: darkblue;
+}
+
+StackPane {
+    -fx-border-color: lightgrey;
+}
+
+GridPane {
+    -fx-background-color: whitesmoke;
 }
