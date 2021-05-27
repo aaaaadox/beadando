@@ -1,8 +1,7 @@
 package hu.unideb;
 
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.*;
+import org.tinylog.Logger;
 
 public class BoardModel {
     public static int BOARD_SIZE = 7;
@@ -12,6 +11,12 @@ public class BoardModel {
     private ReadOnlyBooleanWrapper youLost = new ReadOnlyBooleanWrapper();
 
     private ReadOnlyBooleanWrapper youWon = new ReadOnlyBooleanWrapper();
+
+    private ReadOnlyIntegerWrapper posX = new ReadOnlyIntegerWrapper(6);
+
+    private ReadOnlyIntegerWrapper posY = new ReadOnlyIntegerWrapper(0);
+
+    private Direction previousDirection = Direction.NORTH;
 
     public BoardModel() {
         // default (white)
@@ -71,7 +76,77 @@ public class BoardModel {
         return youWon;
     }
 
+    public int getPosX() {
+        return posX.get();
+    }
+
+    public ReadOnlyIntegerWrapper posXProperty() {
+        return posX;
+    }
+
+    public int getPosY() {
+        return posY.get();
+    }
+
+    public ReadOnlyIntegerWrapper posYProperty() {
+        return posY;
+    }
+
     public void move(int i, int j) {
-        // stubbed
+        // check if it's even near the current pos
+        var nextDirection = determineDirection(i, j);
+        if (nextDirection != null) {
+            // check if it's a legal step to make
+            var currSquare = board[posX.get()][posY.get()].get();
+            switch (currSquare) {
+                case WHITE -> {
+                    if (Direction.forwardOf(previousDirection) != nextDirection) {
+                        Logger.warn("Illegal move attempt detected.");
+                        return;
+                    }
+                }
+                case RED -> {
+                    if (Direction.forwardOf(previousDirection) != nextDirection ||
+                        Direction.rightOf(previousDirection) != nextDirection) {
+                        Logger.warn("Illegal move attempt detected.");
+                        return;
+                    }
+                }
+                case BLUE -> {
+                    if (Direction.forwardOf(previousDirection) != nextDirection ||
+                        Direction.leftOf(previousDirection) != nextDirection) {
+                        Logger.warn("Illegal move attempt detected.");
+                        return;
+                    }
+                }
+            }
+
+            // at this point we can be sure the move can be taken
+            switch (nextDirection) {
+                case NORTH -> posY.set(posY.get() - 1);
+                case EAST -> posX.set(posX.get() + 1);
+                case SOUTH -> posY.set(posY.get() + 1);
+                case WEST -> posX.set(posX.get() - 1);
+            }
+
+            // check if we won yet (should've done this with binding but i'm tired)
+            if (posX.get() == 0 && posY.get() == 6) {
+                youWon.set(true);
+            }
+        }
+    }
+
+    private Direction determineDirection(int i, int j) {
+        if (i > posX.get() && j == posY.get()) {
+            return Direction.SOUTH;
+        } else if (i < posX.get() && j == posY.get()) {
+            return Direction.NORTH;
+        } else if (i == posX.get() && j > posY.get()) {
+            return Direction.EAST;
+        } else if (i == posX.get() && j < posY.get()) {
+            return Direction.WEST;
+        } else {
+            return null;
+        }
     }
 }

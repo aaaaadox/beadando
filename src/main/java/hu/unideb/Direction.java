@@ -6,7 +6,7 @@ public enum Direction {
     SOUTH,
     WEST;
 
-    public Direction forward(Direction prevDirection) {
+    public static Direction forwardOf(Direction prevDirection) {
         return switch (prevDirection) {
             case NORTH -> NORTH;
             case EAST -> EAST;
@@ -15,7 +15,7 @@ public enum Direction {
         };
     }
 
-    public Direction right(Direction prevDirection) {
+    public static Direction rightOf(Direction prevDirection) {
         return switch (prevDirection) {
             case NORTH -> EAST;
             case EAST -> SOUTH;
@@ -24,7 +24,7 @@ public enum Direction {
         };
     }
 
-    public Direction left(Direction prevDirection) {
+    public static Direction leftOf(Direction prevDirection) {
         return switch (prevDirection) {
             case NORTH -> WEST;
             case EAST -> NORTH;

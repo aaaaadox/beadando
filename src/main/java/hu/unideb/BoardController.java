@@ -1,12 +1,16 @@
 package hu.unideb;
 
 import javafx.application.Platform;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import org.tinylog.Logger;
 
 public class BoardController {
@@ -26,6 +30,28 @@ public class BoardController {
 
         model.youLostProperty().addListener(this::handleYouLost);
         model.youWonProperty().addListener(this::handleYouWon);
+        model.posXProperty().addListener(this::handlePieceRepaintX);
+        model.posYProperty().addListener(this::handlePieceRepaintY);
+    }
+
+    private void handlePieceRepaintX(ObservableValue observableValue, Number oldValue, Number newValue) {
+        // remove the piece from its old position
+        ((StackPane) board.getChildren().get(oldValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().removeAll();
+
+        // create a piece at its new position
+        var piece = new Circle(50);
+        piece.setFill(Color.BROWN);
+        ((StackPane) board.getChildren().get(newValue.intValue() * board.getColumnCount() + model.getPosY())).getChildren().add(piece);
+    }
+
+    private void handlePieceRepaintY(ObservableValue observableValue, Number oldValue, Number newValue) {
+        // remove the piece from its old position
+        ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + oldValue.intValue())).getChildren().removeAll();
+
+        // create a piece at its new position
+        var piece = new Circle(50);
+        piece.setFill(Color.BROWN);
+        ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + newValue.intValue())).getChildren().add(piece);
     }
 
     private void handleYouLost(ObservableValue observableValue, boolean oldValue, boolean newValue) {
@@ -70,15 +96,19 @@ public class BoardController {
                     }
                 }
         );
+        square.setOnMouseClicked(this::handleMouseClick);
         return square;
     }
 
     @FXML
     private void handleMouseClick(MouseEvent event) {
+        // detect the click
         var square = (StackPane) event.getSource();
         var row = GridPane.getRowIndex(square);
         var col = GridPane.getColumnIndex(square);
-        Logger.info("Click on square (%d,%d)\n", row, col);
+        Logger.info("Click on square ({}, {})", row, col);
+
+        // pass it on
         model.move(row, col);
     }
 }
