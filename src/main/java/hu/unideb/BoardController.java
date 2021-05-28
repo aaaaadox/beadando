@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import lombok.extern.java.Log;
 import org.tinylog.Logger;
 import util.javafx.ControllerHelper;
 import util.javafx.Stopwatch;
@@ -88,13 +89,15 @@ public class BoardController {
     }
 
     private void bindGameStateToUI() {
+        board.getChildren().remove(0,board.getChildren().size());
+
         for (int i = 0; i < board.getRowCount(); i++) {
             for (int j = 0; j < board.getColumnCount(); j++) {
                 board.add(createSquare(i, j), j, i);
             }
         }
 
-        ((StackPane) board.getChildren().get(6 * board.getColumnCount())).getChildren().add(createPiece());
+        Platform.runLater(() -> ((StackPane) board.getChildren().get(6 * board.getColumnCount())).getChildren().add(createPiece()));
 
         model.youLostProperty().addListener(this::handleYouLost);
         model.youWonProperty().addListener(this::handleYouWon);
@@ -109,6 +112,8 @@ public class BoardController {
     }
 
     private void handlePieceRepaintX(ObservableValue observableValue, Number oldValue, Number newValue) {
+        steps.set(steps.get() + 1);
+
         Logger.debug("Change in X detected");
         Logger.debug("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
 
@@ -120,6 +125,8 @@ public class BoardController {
     }
 
     private void handlePieceRepaintY(ObservableValue observableValue, Number oldValue, Number newValue) {
+        steps.set(steps.get() + 1);
+
         Logger.debug("Change in Y detected");
         Logger.debug("Old value: {}, new value: {}", oldValue.intValue(), newValue.intValue());
 
