@@ -1,27 +1,93 @@
 package hu.unideb;
 
+import javafx.animation.Animation;
 import javafx.application.Platform;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import org.tinylog.Logger;
+import util.javafx.ControllerHelper;
+import util.javafx.Stopwatch;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
 public class BoardController {
 
     @FXML
     private GridPane board;
 
-    private BoardModel model = new BoardModel();
+    private BoardModel model;
+
+    @FXML
+    private Label stepsLabel;
+
+    @FXML
+    private Label stopwatchLabel;
+
+    @FXML
+    private Button resetButton;
+
+    @FXML
+    private Button giveUpFinishButton;
+
+    @Inject
+    private FXMLLoader fxmlLoader;
+
+    @Inject
+    private GameResultDao gameResultDao;
+
+    private Stopwatch stopwatch = new Stopwatch();
+
+    private String playerName;
+
+    private IntegerProperty steps = new SimpleIntegerProperty();
+
+    private Instant startTime;
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
 
     @FXML
     private void initialize() {
+        stepsLabel.textProperty().bind(steps.asString());
+        stopwatchLabel.textProperty().bind(stopwatch.hhmmssProperty());
+
+        resetGame();
+    }
+
+    private void resetGame() {
+        model = new BoardModel();
+        bindGameStateToUI();
+        steps.set(0);
+        startTime = Instant.now();
+        if (stopwatch.getStatus() == Animation.Status.PAUSED) {
+            stopwatch.reset();
+        }
+        stopwatch.start();
+    }
+
+    private void bindGameStateToUI() {
         for (int i = 0; i < board.getRowCount(); i++) {
             for (int j = 0; j < board.getColumnCount(); j++) {
                 board.add(createSquare(i, j), j, i);
@@ -64,6 +130,35 @@ public class BoardController {
         ((StackPane) board.getChildren().get(model.getPosX() * board.getColumnCount() + newValue.intValue())).getChildren().add(createPiece());
     }
 
+    public void handleResetButton(ActionEvent actionEvent)  {
+        Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
+        Logger.info("Resetting game");
+        stopwatch.stop();
+        resetGame();
+    }
+
+    public void handleGiveUpFinishButton(ActionEvent actionEvent) throws IOException {
+        var buttonText = ((Button) actionEvent.getSource()).getText();
+        Logger.debug("{} is pressed", buttonText);
+        if (buttonText.equals("Give Up")) {
+            stopwatch.stop();
+            Logger.info("The game has been given up");
+        }
+        Logger.debug("Saving result");
+        gameResultDao.persist(createGameResult());
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        ControllerHelper.loadAndShowFXML(fxmlLoader, "/highscores.fxml", stage);
+    }
+
+    private GameResult createGameResult() {
+        return GameResult.builder()
+                .player(playerName)
+                .solved(model.getYouWon())
+                .duration(Duration.between(startTime, Instant.now()))
+                .steps(steps.get())
+                .build();
+    }
+
     private void handleYouLost(ObservableValue observableValue, boolean oldValue, boolean newValue) {
         if (newValue) {
             Logger.info("The user has lost.");
@@ -72,19 +167,20 @@ public class BoardController {
             gameOverAlert.setHeaderText(":(");
             gameOverAlert.setContentText("You lost!");
             gameOverAlert.showAndWait();
-            Platform.exit();
         }
     }
 
     private void handleYouWon(ObservableValue observableValue, boolean oldValue, boolean newValue) {
         if (newValue) {
             Logger.info("The user has won!");
+            stopwatch.stop();
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
             gameOverAlert.setTitle("Game Over");
             gameOverAlert.setHeaderText("Congratulations!");
             gameOverAlert.setContentText("You won!");
             gameOverAlert.showAndWait();
-            Platform.exit();
+            resetButton.setDisable(true);
+            giveUpFinishButton.setText("Finish");
         }
     }
 
