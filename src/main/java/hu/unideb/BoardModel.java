@@ -98,6 +98,14 @@ public class BoardModel {
         return posY;
     }
 
+    /**
+     * Verifies if from a given colored square, considering the passed previous
+     * step direction, you can take the passed next step, or not.
+     * @param sq a square you're standing on
+     * @param prevDirection the direction you stepped onto it
+     * @param nextDirection the direction you want to go
+     * @return if you can move that way or not
+     */
     private boolean isLegal(Square sq, Direction prevDirection, Direction nextDirection) {
         switch (sq) {
             case WHITE -> {
@@ -122,6 +130,10 @@ public class BoardModel {
         return true;
     }
 
+    /**
+     * Executes a step, in a given direction. Assumes step legality.
+     * @param nextDirection the direction to move in
+     */
     private void changePos(Direction nextDirection) {
         switch (nextDirection) {
             case NORTH -> posX.set(posX.get() - 1);
@@ -134,14 +146,28 @@ public class BoardModel {
         previousDirection = nextDirection;
     }
 
+    /**
+     * Checks if the game is won yet.
+     */
     private void checkWinState() {
         if (posX.get() == 0 && posY.get() == 6) youWon.set(true);
     }
 
+    /**
+     * Checks if the game is lost yet.
+     */
     private void checkLoseState() {
         // stubbed
     }
 
+    /**
+     * This publicly exposed method calls the various verification methods
+     * first, and then calls for the execution of a move, if found legal.
+     *
+     * Fails silently with logging, if the to-be-taken move was found illegal.
+     * @param i target row
+     * @param j target column
+     */
     public void move(int i, int j) {
         // check if it's even near the current pos
         var nextDirection = determineDirection(i, j);
@@ -167,6 +193,15 @@ public class BoardModel {
         }
     }
 
+    /**
+     * Converts a target coordinate to a target direction.
+     *
+     * In case the target coordinate cannot be mapped to a direction,
+     * it returns null.
+     * @param i target row
+     * @param j target column
+     * @return a {@link Direction} if such mapping is possible, null otherwise
+     */
     private Direction determineDirection(int i, int j) {
         if (i == posX.get() + 1 && j == posY.get()) {
             return Direction.SOUTH;
